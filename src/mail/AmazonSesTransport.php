@@ -18,14 +18,17 @@ class AmazonSesTransport extends SesApiAsyncAwsTransport
      */
     private string $_configurationSet;
 
+    private ?string $_listManagementOptions = null;
+
     /**
      * Override the method, so we can store the configuration set.
      */
-    public function __construct(SesClient $client, string $configurationSet)
+    public function __construct(SesClient $client, string $configurationSet, ?string $listManagementOptions = null)
     {
         parent::__construct($client);
 
         $this->_configurationSet = $configurationSet;
+        $this->_listManagementOptions = $listManagementOptions;
     }
 
     /**
@@ -38,6 +41,16 @@ class AmazonSesTransport extends SesApiAsyncAwsTransport
 
             if ($originalMessage instanceof Message) {
                 $originalMessage->getHeaders()->addTextHeader('X-SES-CONFIGURATION-SET', $this->_configurationSet);
+            }
+        }
+
+        // Attach ListManagementOptions as TextHeader until SesApiAsyncAwsTransport::getRequest is able to attach ListManagementOptions to the SendEmailRequest
+        if ($this->_listManagementOptions) {
+            if(!isset($originalMessage))
+                $originalMessage = $message->getOriginalMessage();
+
+            if ($originalMessage instanceof Message) {
+                $originalMessage->getHeaders()->addTextHeader('X-SES-LIST-MANAGEMENT-OPTIONS', $this->_listManagementOptions);
             }
         }
 

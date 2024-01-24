@@ -48,3 +48,41 @@
     value: adapter.configurationSet,
     errors: adapter.getErrors('configurationSet'),
 }) }}
+
+{{ forms.lightSwitchField({
+    label: "List Management Options"|t('amazon-ses'),
+    name: 'listManagementOptions',
+    instructions: "If enabled, adapter is configured to use ListManagementOptions. {link}"|t('amazon-ses', {link: '<a href=" https://docs.aws.amazon.com/ses/latest/dg/sending-email-list-management.html" class="go" target="blank">Docs</a>'}),
+    on: adapter.listManagementOptions,
+    checked: false,
+    toggle: "listManagementSettings",
+    errors: adapter.getErrors("listManagementOptions"),
+}) }}
+
+<div id="listManagementSettings" class="field {{ not adapter.listManagementOptions ? 'hidden' }}">
+
+{{ forms.autosuggestField({
+    label: "ContactListName"|t('amazon-ses'),
+    id: 'contactListName',
+    name: 'contactListName',
+    instructions: "The name of the contact list."|t('amazon-ses'),
+    suggestEnvVars: true,
+    suggestions: craft.cp.getEnvSuggestions(),
+    value: adapter.contactListName,
+    required: true,
+    errors: adapter.getErrors('contactListName'),
+}) }}
+
+{{ forms.autosuggestField({
+    label: "TopicName"|t('amazon-ses'),
+    id: 'topicName',
+    name: 'topicName',
+    instructions: "The name of the topic."|t('amazon-ses'),
+    suggestEnvVars: true,
+    suggestions: craft.cp.getEnvSuggestions(),
+    value: adapter.topicName,
+    required: true,
+    errors: adapter.getErrors('topicName'),
+}) }}
+
+</div>

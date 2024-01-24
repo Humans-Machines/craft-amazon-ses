@@ -68,6 +68,21 @@ class AmazonSesAdapter extends BaseTransportAdapter
     public string $configurationSet = '';
 
     /**
+     * @var bool ListManagementOptions
+     */
+    public bool $listManagementOptions = false;
+
+    /**
+     * @var string ListManagementOptions.ContactListName
+     */
+    public string $contactListName = '';
+
+    /**
+     * @var string ListManagementOptions.TopicName
+     */
+    public string $topicName = '';
+
+    /**
      * @var bool Debug mode
      */
     private bool $_debug = false;
@@ -119,7 +134,10 @@ class AmazonSesAdapter extends BaseTransportAdapter
         // Create new client
         $client = new SesClient($config);
 
-        return new AmazonSesTransport($client, App::parseEnv($this->configurationSet));
+        // If ListManagementOptions are enabled, provide string for text header
+        $listManagementOptions = $this->listManagementOptions ? '' . App::parseEnv($this->contactListName) . '; topicName=' . App::parseEnv($this->topicName) : null;
+
+        return new AmazonSesTransport($client, App::parseEnv($this->configurationSet), $listManagementOptions);
     }
 
     /**
@@ -130,7 +148,7 @@ class AmazonSesAdapter extends BaseTransportAdapter
         return [
             'parser' => [
                 'class' => EnvAttributeParserBehavior::class,
-                'attributes' => ['region', 'apiKey', 'apiSecret', 'configurationSet'],
+                'attributes' => ['region', 'apiKey', 'apiSecret', 'configurationSet', 'listManagementOptions', 'contactListName', 'topicName'],
             ],
         ];
     }
